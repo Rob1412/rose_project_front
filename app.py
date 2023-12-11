@@ -109,7 +109,7 @@ if img_file_buffer is not None:
 
 c1, c2 = st.columns(2)
 # Placeholder image for the right side
-placeholder_image_path = ".streamlit/placeholder.png"
+placeholder_image_path = ".streamlit/rose_hi.png"
 
 # Display images side by side
 c2.subheader("Rose says:")
