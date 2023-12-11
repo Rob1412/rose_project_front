@@ -1,54 +1,19 @@
 # ----------------------Importing libraries----------------------
 
+import requests
 import streamlit as st
-from streamlit_pills import pills
-import pandas as pd
-import numpy as np
 from PIL import Image
-import cv2
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from keras.applications.resnet50 import ResNet50
-from keras.preprocessing import image
-from keras.applications.resnet50 import preprocess_input
-import os
 
-# Imports for AgGrid
-from st_aggrid import AgGrid, GridUpdateMode, JsCode
-from st_aggrid.grid_options_builder import GridOptionsBuilder
-
-# ----------------------Importing utils.py----------------------
-
-import io
-import snowflake as sf
-from snowflake import connector
-# Third-party libraries
-from utils import (
-    connect_to_snowflake,
-    load_data_to_snowflake,
-    load_data_to_postgres,
-    connect_to_postgres
-)
 # ----------------------Page config--------------------------------------
 
 st.set_page_config(page_title="The Rose Project!", page_icon="🌹")
 
 # ----------------------Sidebar section--------------------------------
 
-import requests
-from dotenv import load_dotenv
-
-
-# Example local Docker container URL
-# url = 'http://api:8000'
-# Example localhost development URL
-# url = 'http://localhost:8000'
-load_dotenv()
 url = 'https://roserose4rose-ozkpyxorwq-ew.a.run.app'
 
-
 # Set background color
+
 st.markdown(
     """
     <style>
@@ -85,31 +50,30 @@ st.markdown(font_style, unsafe_allow_html=True)
 
 if img_file_buffer is not None:
 
-  col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-  with col1:
-    ### Display the image user uploaded
-    st.image(Image.open(img_file_buffer), caption="Here's the image you uploaded ☝️")
+    with col1:
+        # Display the image user uploaded
+        st.image(Image.open(img_file_buffer), caption="Here's the image you uploaded ☝️")
 
-  with col2:
-    with st.spinner("Wait for it..."):
-      ### Get bytes from the file buffer
-      img_bytes = img_file_buffer.getvalue()
+    with col2:
+        with st.spinner("Wait for it..."):
+            # Get bytes from the file buffer
+            img_bytes = img_file_buffer.getvalue()
 
-      ### Make request to  API (stream=True to stream response as bytes)
-      res = requests.post(url + "/upload_image", files={'img': img_bytes})
+            # Make request to  API
+            res = requests.post(url + "/upload_image", files={'img': img_bytes})
 
-      #if res.status_code == 200:
-        ### Display the image returned by the API
-      st.write(res.json())
-      #else:
-      #  st.markdown("**Oops**, something went wrong 😓 Please try again.")
-      #  print(res.status_code, res.content)
+            if res.status_code == 200:
+                # Display the image returned by the API
+                st.write(res.json())
+            else:
+                st.markdown("**Oops**, something went wrong 😓 Please try again.")
 
 
 c1, c2 = st.columns(2)
 # Placeholder image for the right side
-placeholder_image_path = ".streamlit/placeholder.png"
+placeholder_image_path = ".streamlit/rose_hi.png"
 
 # Display images side by side
 c2.subheader("Rose says:")
