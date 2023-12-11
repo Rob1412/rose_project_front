@@ -31,7 +31,7 @@ st.markdown(
 logo_column = st.image("rose_avatar/rose logo.png", use_column_width=True)
 #logo_column.image("rose_avatar/Rose logo.png", use_column_width=True)
 
-st.markdown('<p style="font-family: \'PT Sans Narrow\', sans-serif; font-size: 38px; font-weight: bold; text-align: center;">An iris-istable flower classification project</p>',
+st.markdown('<p style="font-family: \'PT Sans Narrow\', sans-serif; font-size: 32px; font-weight: bold; text-align: center;">An iris-istable flower classification project</p>',
             unsafe_allow_html=True)
 
 # Upload image
@@ -65,13 +65,47 @@ if img_file_buffer is not None:
             res = requests.post(url + "/upload_image", files={'img': img_bytes})
 
             if res.status_code == 200:
-                # Display the image returned by the API
-                st.write(res.json())
+
+                returnval = res.json()
+                pred_class = returnval['pred_class']
+                pred_prob = returnval['pred_prob']
+                how_much_pink = returnval['how_much_pink']
+
+
+                # Display the result
+                if pred_prob < 75:
+                    if how_much_pink == 2:
+                        st.write("I don't know what this is, but at least it's pink!")
+                    else:
+                        st.write("I don't know what this is and it's not even pink!")
+                else:
+                    if pred_class == "rose":
+                        if how_much_pink == 2:
+                            st.write("A pink rose! My favourite!")
+                        else:
+                            st.write("Well it's a rose, but it's not pink is it?")
+                    else:
+                        if how_much_pink == 2:
+                            st.write(f"This looks a like a {pred_class} but at least it's pink!")
+                        else:
+                            st.write(f"This looks a like a {pred_class} and it's not even pink!")
+                            st.image(Image.open(".streamlit/rose_no.png"), use_column_width=True)
+
+                # Determine which image to display based on the prediction
+                # if pred_class == "Tulip" and how_much_pink:
+                #     image_path = ".streamlit/rose_no.png"
+                # elif pred_class == "Sunflower":
+                #     image_path = ".streamlit/rose_buh.png"
+                # else:
+                #     image_path = ".streamlit/rose_super_awesome.png"
+                # # Display the appropriate image
+                # st.image(Image.open(image_path), use_column_width=True)
             else:
                 st.markdown("**Oops**, something went wrong 😓 Please try again.")
 
 
 c1, c2 = st.columns(2)
+
 # Placeholder image for the right side
 placeholder_image_path = ".streamlit/rose_hi.png"
 
