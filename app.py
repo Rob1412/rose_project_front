@@ -2,6 +2,7 @@
 
 import requests
 import streamlit as st
+import time
 from PIL import Image
 
 # ----------------------Markdown function----------------------
@@ -47,11 +48,24 @@ st.write("")
 st.write("")
 st.write("")
 st.write("")
+
+# Change font and size
+
+font_style = '''
+     <style>
+         body {
+             font-family: 'PT Sans Narrow', sans-serif;
+             font-size: 24px;
+         }
+     </style>
+ '''
+st.markdown(font_style, unsafe_allow_html=True)
+
+# File uploader
+
+img_file_buffer = st.file_uploader("")
+
 st.write("")
-
-# Add image uploader:
-
-img_file_buffer = st.file_uploader('Upload an image of a flower of your choice')
 
 # Split into two columns (one for picture of flower, one for Rose's prediction):
 
@@ -59,79 +73,87 @@ col1, col2 = st.columns(2)
 
 col1.markdown(
     """
-    <div style="background-color: #d8b6ff; font-size: 20px; padding: 10px; border-radius: 10px; text-align: center">
+    <div style="font-family: 'PT Sans Narrow', sans-serif; background-color: #d8b6ff; font-size: 24px; padding: 10px; border-radius: 10px; text-align: center">
     Your flower:
     </div>
     """, unsafe_allow_html=True)
+col1.write("")
 
 col2.markdown(
     """
-    <div style="background-color: #d8b6ff; font-size: 20px; padding: 10px; border-radius: 10px; text-align: center">
+    <div style="font-family: 'PT Sans Narrow', sans-serif; background-color: #d8b6ff; font-size: 24px; padding: 10px; border-radius: 10px; text-align: center">
     Rose says:
     </div>
     """, unsafe_allow_html=True)
+col2.write("")
 
 if img_file_buffer is None:
 
-    with col1:
-        st.image(".streamlit/rose_hi.png", use_column_width=True)
-    with col2:
-        st.image(".streamlit/rose_curious2_flipped.png", use_column_width=True)
+    col1.image(".streamlit/rose_hi.png", use_column_width=True)
+
+    #col2.image(".streamlit/rose_curious2_flipped.png", use_column_width=True)
 
 else:
 
-    with col1:
+    # Display the image user uploaded in column 1:
 
-        # Display the image user uploaded
-        st.write("")
-        st.markdown(formatting("Here is the flower you gave to Rose!"), unsafe_allow_html=True)
-        st.image(Image.open(img_file_buffer), use_column_width=True)
+    col1.markdown(formatting("Here is the flower you gave to Rose!"), unsafe_allow_html=True)
+    col1.image(Image.open(img_file_buffer), use_column_width=True)
 
-        # c11,c12,c13 = col1.columns([2.5,10,1])
-        # c12.image(Image.open(img_file_buffer))
+    # Give the prediction in column 2:
 
     with col2:
+
+        placeholder2 = col2.empty()
+
+        placeholder3 = col2.empty()
+
         with st.spinner("Rose is looking at your flower..."):
+
+            time.sleep(1)
+
+            placeholder = st.empty()
+
+            placeholder.image(".streamlit/rose_curious2_flipped.png")
+
             # Get bytes from the file buffer
             img_bytes = img_file_buffer.getvalue()
 
             # Make request to  API
             res = requests.post(url + "/upload_image", files={'img': img_bytes})
 
-            if res.status_code == 200:
+            time.sleep(5)
 
-                returnval = res.json()
-                pred_class = returnval['pred_class']
-                pred_prob = returnval['pred_prob']
-                how_much_pink = returnval['how_much_pink']
+            placeholder.empty()
 
+        if res.status_code == 200:
 
-                # Display the result
-                if pred_prob < 75:
-                    st.write("")
-                    st.markdown(formatting("I don't even know what this is!"), unsafe_allow_html=True)
-                    st.image(Image.open(".streamlit/rose_flower_sad"), use_column_width=True)
-                else:
-                    if pred_class == "rose":
-                        if how_much_pink == 2:
-                            st.write("")
-                            st.markdown(formatting("A pink rose! My favourite!"), unsafe_allow_html=True)
-                            st.image(Image.open(".streamlit/rose_super_awesome"), use_column_width=True)
-                        else:
-                            st.write("")
-                            st.markdown(formatting("It's a rose, but it's not pink is it?"), unsafe_allow_html=True)
-                            st.image(Image.open(".streamlit/rose_not_impressed.png"), use_column_width=True)
-                    else:
-                        if how_much_pink == 2:
-                            st.write("")
-                            st.markdown(formatting(f"This is a {pred_class}; at least it's pink!"), unsafe_allow_html=True)
-                            st.image(Image.open(".streamlit/rose_question_mark.png"), use_column_width=True)
-                        else:
-                            st.write("")
-                            st.markdown(formatting(f"This is a {pred_class}; it's not even pink!"), unsafe_allow_html=True)
-                            st.image(Image.open(".streamlit/rose_no.png"), use_column_width=True)
+            returnval = res.json()
+            pred_class = returnval['pred_class']
+            pred_prob = returnval['pred_prob']
+            how_much_pink = returnval['how_much_pink']
+
+            # Display the result
+            if pred_prob < 75:
+                placeholder2.markdown(formatting("I don't even know what this is!"), unsafe_allow_html=True)
+                placeholder3.image(Image.open(".streamlit/rose_flower_sad.png"), use_column_width=True)
             else:
-                st.markdown("**Oops**, something went wrong 😓 Please try again.")
+                if pred_class == "rose":
+                    if how_much_pink == 2:
+                        placeholder2.markdown(formatting("A pink rose! My favourite!"), unsafe_allow_html=True)
+                        placeholder3.image(Image.open(".streamlit/rose_super_awesome.png"), use_column_width=True)
+                    else:
+                        placeholder2.markdown(formatting("It's a rose, but it's not pink, is it?"), unsafe_allow_html=True)
+                        placeholder3.image(Image.open(".streamlit/rose_not_impressed.png"), use_column_width=True)
+                else:
+                    if how_much_pink == 2:
+                        placeholder2.markdown(formatting(f"This is a {pred_class}; at least it's pink!"), unsafe_allow_html=True)
+                        placeholder3.image(Image.open(".streamlit/rose_question_mark.png"), use_column_width=True)
+                    else:
+                        placeholder2.markdown(formatting(f"This is a {pred_class}; it's not even pink!"), unsafe_allow_html=True)
+                        placeholder3.image(Image.open(".streamlit/rose_no.png"), use_column_width=True)
+        else:
+            placeholder2.markdown("**Oops**, something went wrong 😓 Please try again.")
 
 
 
