@@ -33,7 +33,7 @@ st.markdown(
 
 # Add logo at top of page:
 
-st.image("rose_avatar/rose logo.png", use_column_width=True)
+st.image(".streamlit/rose logo.png", use_column_width=True)
 
 # Add subheader:
 
