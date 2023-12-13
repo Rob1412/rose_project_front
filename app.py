@@ -89,7 +89,9 @@ col2.write("")
 
 if img_file_buffer is None:
 
-    col1.image(".streamlit/rose_hi.png", use_column_width=True)
+    col1.image(".streamlit/offer_flower.png", use_column_width=True)
+
+    col2.image(".streamlit/rose_hi.png", use_column_width=True)
 
 else:
 
