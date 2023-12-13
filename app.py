@@ -63,7 +63,7 @@ st.markdown(font_style, unsafe_allow_html=True)
 
 # File uploader
 
-img_file_buffer = st.file_uploader("")
+img_file_buffer = st.file_uploader(label="Upload flower here", label_visibility='collapsed')
 
 st.write("")
 
