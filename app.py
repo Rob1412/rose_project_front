@@ -122,7 +122,7 @@ else:
             # Make request to  API
             res = requests.post(url + "/upload_image", files={'img': img_bytes})
 
-            time.sleep(5)
+            time.sleep(3)
 
             placeholder.empty()
 
